@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TrackingService.CoreLib\TrackingService.CoreLib.csproj" />
+    <ProjectReference Include="..\TrackingService.Dal\TrackingService.Dal.csproj" />
+  </ItemGroup>
+
 </Project>
