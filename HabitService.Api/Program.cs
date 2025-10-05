@@ -1,3 +1,5 @@
+using HabitService.Application.Interfaces;
+using HabitService.Application.Services;
 using HabitService.Domain.Interfaces;
 using HabitService.Infrastructure.Persistence;
 using HabitService.Infrastructure.Persistence.Repositories;
@@ -5,23 +7,39 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --- НАСТРОЙКА СЕРВИСОВ ---
+
 // 1. Регистрируем DbContext
 builder.Services.AddDbContext<HabitDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Регистрируем наши репозитории (исполнителей для интерфейсов)
+// 2. Регистрируем наши репозитории (Infrastructure слой)
 builder.Services.AddScoped<IHabitRepository, HabitRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ITagRepository, TagRepository>(); // Если ты его создавала
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 
-// -- Стандартный код --
+// 3. Регистрируем наши сервисы (Application слой)
+builder.Services.AddScoped<IHabitManagementService, HabitManagementService>();
+
+
+// --- СТАНДАРТНЫЙ КОД ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// --- СБОРКА ПРИЛОЖЕНИЯ ---
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- АВТОМАТИЧЕСКОЕ ПРИМЕНЕНИЕ МИГРАЦИЙ ---
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<HabitDbContext>();
+    dbContext.Database.Migrate();
+}
+// ---------------------------------------------
+
+
+// --- НАСТРОЙКА КОНВЕЙЕРА ОБРАБОТКИ ЗАПРОСОВ ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -31,4 +49,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// --- ЗАПУСК ПРИЛОЖЕНИЯ ---
 app.Run();
