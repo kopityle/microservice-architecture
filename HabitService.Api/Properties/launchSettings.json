@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "HabitService.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:64779;http://localhost:64780"
+    }
+  }
+}
