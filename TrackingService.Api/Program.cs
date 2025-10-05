@@ -1,8 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using TrackingService.Dal;
+using TrackingService.Logic;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<TrackingDbContext>(options =>
 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<TrackingManager>();
 // Add services to the container.
 
 builder.Services.AddControllers();
