@@ -14,4 +14,9 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HabitService.Application\HabitService.Application.csproj" />
+    <ProjectReference Include="..\HabitService.Infrastructure\HabitService.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

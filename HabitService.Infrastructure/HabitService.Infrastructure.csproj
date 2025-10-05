@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HabitService.Application\HabitService.Application.csproj" />
+  </ItemGroup>
+
 </Project>
