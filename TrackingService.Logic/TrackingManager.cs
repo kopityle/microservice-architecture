@@ -1,22 +1,35 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TrackingService.CoreLib;
+using TrackingService.CoreLib.Interfaces;
 using TrackingService.Dal;
+using TrackingService.CoreLib.Interfaces;
 
 namespace TrackingService.Logic;
 
 public class TrackingManager
 {
     private readonly TrackingDbContext _context;
+    private readonly IHabitServiceClient _habitServiceClient;
 
     // Конструктор: Logic слой получает DbContext от Dal слоя
-    public TrackingManager(TrackingDbContext context)
+    public TrackingManager(TrackingDbContext context, IHabitServiceClient habitServiceClient)
     {
         _context = context;
+        _habitServiceClient = habitServiceClient;
     }
 
     //  CRUD
     public async Task MarkHabitAsDone(Guid habitId, Guid userId)
     {
+        // Проверяем, существует ли такая привычка в HabitService
+        var habitExists = await _habitServiceClient.HabitExistsAsync(habitId, CancellationToken.None);
+        if (!habitExists)
+        {
+            // Если привычки нет, мы не можем создать для нее отметку.
+            // Бросаем исключение, чтобы сообщить об ошибке.
+            throw new Exception($"Привычка с ID {habitId} не найдена в HabitService.");
+        }
+
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         // --- Работа с сущностью DailyRecord ---
