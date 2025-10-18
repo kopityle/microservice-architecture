@@ -1,16 +1,29 @@
+using Common.Http;
 using Microsoft.EntityFrameworkCore;
+using TrackingService.CoreLib.Interfaces;
 using TrackingService.Dal;
+using TrackingService.Infrastructure.Clients;
 using TrackingService.Logic;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<TrackingDbContext>(options =>
-options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// --- Регистрация сервисов приложения ---
+
+// Слой Logic
 builder.Services.AddScoped<TrackingManager>();
-// Add services to the container.
 
+// Слой Infrastructure/Dal
+builder.Services.AddDbContext<TrackingDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IHabitServiceClient, HabitServiceApiClient>(); // Регистрация нашего HTTP-клиента
+
+// Общие библиотеки (Libs)
+builder.Services.AddHttpService();
+
+
+// --- Стандартная настройка ASP.NET Core ---
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
