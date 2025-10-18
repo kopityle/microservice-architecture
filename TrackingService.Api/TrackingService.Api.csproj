@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common.Http\Common.Http.csproj" />
     <ProjectReference Include="..\TrackingService.Dal\TrackingService.Dal.csproj" />
     <ProjectReference Include="..\TrackingService.Logic\TrackingService.Logic.csproj" />
   </ItemGroup>

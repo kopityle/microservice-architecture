@@ -26,4 +26,10 @@ public class HabitManagementService : IHabitManagementService
 
         await _habitRepository.AddAsync(newHabit);
     }
+
+    public async Task<Habit?> GetHabitByIdAsync(Guid id)
+    {
+        // Вся логика работы с базой скрыта в Infrastructure слое.
+        return await _habitRepository.GetByIdAsync(id);
+    }
 }
