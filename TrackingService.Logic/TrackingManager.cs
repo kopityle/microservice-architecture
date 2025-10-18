@@ -2,8 +2,6 @@
 using TrackingService.CoreLib;
 using TrackingService.CoreLib.Interfaces;
 using TrackingService.Dal;
-using TrackingService.CoreLib.Interfaces;
-
 namespace TrackingService.Logic;
 
 public class TrackingManager
