@@ -4,6 +4,7 @@ using TrackingService.CoreLib.Interfaces;
 using TrackingService.Dal;
 using TrackingService.Infrastructure.Clients;
 using TrackingService.Logic;
+using TrackingService.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseMiddleware<TraceIdMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
