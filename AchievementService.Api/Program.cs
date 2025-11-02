@@ -15,7 +15,7 @@ builder.Services.AddScoped<AchievementManager>();
 builder.Services.AddMassTransit(x =>
 {
     // 1. Регистрируем нашего "слушателя"
-    x.AddConsumer<StreakAchievedConsumer>();
+    x.AddConsumer<DeleteUserAchievementsConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -27,9 +27,9 @@ builder.Services.AddMassTransit(x =>
 
         // 3. Создаем "почтовый ящик" (очередь) с именем "achievement-streak-queue"
         //    и говорим, чтобы наш слушатель (Consumer) его проверял.
-        cfg.ReceiveEndpoint("achievement-streak-queue", e =>
+        cfg.ReceiveEndpoint("delete-achievements-queue", e => 
         {
-            e.ConfigureConsumer<StreakAchievedConsumer>(context);
+            e.ConfigureConsumer<DeleteUserAchievementsConsumer>(context);
         });
     });
 });

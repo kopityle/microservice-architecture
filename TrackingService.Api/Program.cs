@@ -6,6 +6,7 @@ using TrackingService.CoreLib.Interfaces;
 using TrackingService.Dal;
 using TrackingService.Infrastructure.Clients;
 using TrackingService.Logic;
+using TrackingService.Api.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +27,19 @@ builder.Services.AddHttpService();
 // Íàñòðîéêà MassTransit ñ RabbitMQ
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<DeleteUserTrackingDataConsumer>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host("localhost", "/", h => {
             h.Username("guest");
             h.Password("guest");
+        });
+
+        // 2. ÄÎÁÀÂËßÅÌ ÍÎÂÓÞ Î×ÅÐÅÄÜ È "ÏÐÈÂßÇÛÂÀÅÌ" Ê ÍÅÉ CONSUMER
+        cfg.ReceiveEndpoint("delete-tracking-queue", e =>
+        {
+            e.ConfigureConsumer<DeleteUserTrackingDataConsumer>(context);
         });
     });
 });
