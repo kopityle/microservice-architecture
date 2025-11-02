@@ -2,18 +2,23 @@
 using TrackingService.CoreLib;
 using TrackingService.CoreLib.Interfaces;
 using TrackingService.Dal;
+using MassTransit;
+using Common.Messages.Events;
+
 namespace TrackingService.Logic;
 
 public class TrackingManager
 {
     private readonly TrackingDbContext _context;
     private readonly IHabitServiceClient _habitServiceClient;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     // Конструктор: Logic слой получает DbContext от Dal слоя
-    public TrackingManager(TrackingDbContext context, IHabitServiceClient habitServiceClient)
+    public TrackingManager(TrackingDbContext context, IHabitServiceClient habitServiceClient, IPublishEndpoint publishEndpoint)
     {
         _context = context;
         _habitServiceClient = habitServiceClient;
+        _publishEndpoint = publishEndpoint;
     }
 
     //  CRUD
@@ -97,6 +102,10 @@ public class TrackingManager
             }
             streak.LastUpdateDate = today;
             _context.Streaks.Update(streak);
+        }
+        if (streak.CurrentStreak == 7)
+        {
+            await _publishEndpoint.Publish(new StreakAchieved(userId, habitId, 7));
         }
 
         // 5. Сохраняем все изменения в базе данных ОДНОЙ транзакцией

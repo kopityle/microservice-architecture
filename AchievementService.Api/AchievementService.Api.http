@@ -1,0 +1,6 @@
+@AchievementService.Api_HostAddress = http://localhost:5138
+
+GET {{AchievementService.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -26,7 +26,7 @@ public class TraceIdMiddleware
         {
             if (!context.Response.Headers.ContainsKey(TraceIdHeaderName))
             {
-                context.Response.Headers.Add(TraceIdHeaderName, traceIdAccessor.GetValue());
+                context.Response.Headers.Append(TraceIdHeaderName, traceIdAccessor.GetValue());
             }
             return Task.CompletedTask;
         });

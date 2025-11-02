@@ -1,10 +1,12 @@
 using Common.Http;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using TrackingService.Api.Middleware;
 using TrackingService.CoreLib.Interfaces;
 using TrackingService.Dal;
 using TrackingService.Infrastructure.Clients;
 using TrackingService.Logic;
-using TrackingService.Api.Middleware;
+using TrackingService.Api.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,25 @@ builder.Services.AddScoped<IHabitServiceClient, HabitServiceApiClient>(); // Рег
 // Общие библиотеки (Libs)
 builder.Services.AddHttpService();
 
+// Настройка MassTransit с RabbitMQ
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<DeleteUserTrackingDataConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h => {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        // 2. ДОБАВЛЯЕМ НОВУЮ ОЧЕРЕДЬ И "ПРИВЯЗЫВАЕМ" К НЕЙ CONSUMER
+        cfg.ReceiveEndpoint("delete-tracking-queue", e =>
+        {
+            e.ConfigureConsumer<DeleteUserTrackingDataConsumer>(context);
+        });
+    });
+});
 
 // --- Стандартная настройка ASP.NET Core ---
 builder.Services.AddControllers();
