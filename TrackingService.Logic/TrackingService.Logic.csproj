@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.5.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common.Messages\Common.Messages.csproj" />
     <ProjectReference Include="..\TrackingService.CoreLib\TrackingService.CoreLib.csproj" />
     <ProjectReference Include="..\TrackingService.Dal\TrackingService.Dal.csproj" />
   </ItemGroup>
