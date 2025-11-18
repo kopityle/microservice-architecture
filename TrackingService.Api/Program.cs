@@ -7,12 +7,27 @@ using TrackingService.Dal;
 using TrackingService.Infrastructure.Clients;
 using TrackingService.Logic;
 using TrackingService.Api.Consumers;
+using StackExchange.Redis;
+using Common.Interfaces;
+using TrackingService.Dal.DistributedLocks;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 // --- Регистрация сервисов приложения ---
+// Подключаемся к Redis и регистрируем его как Singleton
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis"))
+);
 
+// Регистрируем нашу реализацию семафора как Singleton
+builder.Services.AddSingleton<IDistributedSemaphore>(provider =>
+    new RedisDistributedSemaphore(
+        "mark-habit-semaphore", // Уникальное имя нашего "турникета"
+        3, // Максимум 3 одновременных запроса
+        provider.GetRequiredService<IConnectionMultiplexer>()
+    )
+);
 // Слой Logic
 builder.Services.AddScoped<TrackingManager>();
 
